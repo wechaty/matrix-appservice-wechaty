@@ -136,7 +136,7 @@ export class AppserviceManager extends Manager {
           break
         case MessageType.Audio:
           break
-        case MessageType.Contact: // image in ipad protocol is Emoticon
+        case MessageType.Contact:
           break
         case MessageType.Emoticon: case MessageType.Image:
         // image in web protocol is Image, in ipad protocol is Emoticon
