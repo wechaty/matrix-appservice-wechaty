@@ -9,6 +9,9 @@ import {
   AppServiceRegistration,
 }                       from 'matrix-appservice-bridge'
 
+import { Message } from 'wechaty'
+import { MessageType } from 'wechaty-puppet'
+
 import {
   log,
 }                       from './config'
@@ -108,12 +111,13 @@ export class AppserviceManager extends Manager {
   }
 
   public async sendMessage (
-    withText  : string,
+    message   : string | Message,
     inRoom    : MatrixRoom,
     fromUser? : MatrixUser,
   ) {
+    const text = typeof (message) === 'string' ? message : message.text()
     log.verbose('AppserviceManager', 'sendMessage(%s%s%s)',
-      withText.substr(0, 100),
+      text.substr(0, 100),
       inRoom
         ? ', ' + inRoom.getId()
         : '',
@@ -122,18 +126,50 @@ export class AppserviceManager extends Manager {
         : '',
     )
 
-    try {
-      let matrixUserId
+    const intent = this.bridge.getIntent(fromUser && fromUser.getId())
 
-      if (fromUser) {
-        matrixUserId = fromUser && fromUser.getId()
+    if (typeof (message) !== 'string') {
+      switch (message.type()) {
+        case MessageType.Unknown:
+          break
+        case MessageType.Attachment:
+          break
+        case MessageType.Audio:
+          break
+        case MessageType.Contact:
+          break
+        case MessageType.Emoticon: case MessageType.Image:
+        // image in web protocol is Image, in ipad protocol is Emoticon
+          try {
+            const file = await message.toFileBox()
+            const buffer = await file.toBuffer()
+            // XXX It is recommended to use a digital summary to construct the file name to avoid repeated uploads.
+            // digital summary consuming too much computing resources, use the url to lable it is better.
+            const url = await intent.uploadContent(buffer, {
+              name: file.name,
+              type: file.mimeType === 'emoticon' ? 'image/gif' : file.mimeType,
+            })
+            await intent.sendMessage(
+              inRoom.getId(),
+              {
+                body: 'Image',
+                info: {},
+                msgtype: 'm.image',
+                url: url,
+              }
+            )
+          } catch (e) {
+            log.error(`AppserviceManager', 'sendMessage() rejection from ${fromUser ? fromUser.getId() : 'BOT'} to room ${inRoom.getId()}`)
+            throw e
+          }
+          return
       }
+    }
 
-      const intent = this.bridge.getIntent(matrixUserId)
-
+    try {
       await intent.sendText(
         inRoom.getId(),
-        withText,
+        text,
       )
     } catch (e) {
       log.error(`AppserviceManager', 'sendMessage() rejection from ${fromUser ? fromUser.getId() : 'BOT'} to room ${inRoom.getId()}`)

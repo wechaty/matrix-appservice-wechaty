@@ -1,6 +1,6 @@
 {
   "name": "matrix-appservice-wechaty",
-  "version": "0.8.28",
+  "version": "0.8.30",
   "description": "Matrix Application Services Bridge for Wechat",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -13,6 +13,8 @@
     "lint:es": "eslint --ignore-pattern tests/fixtures/ '{bin,src,tests}/**/*.ts' ",
     "lint:ts": "tsc --noEmit",
     "dev": "LOG_LEVEL=silly ts-node bin/matrix-appservice-wechaty.ts",
+    "dev:genarate-registration": "ts-node bin/matrix-appservice-wechaty.ts --config config.yaml --url http://localhost:8788 --generate-registration",
+    "dev:service": "ts-node bin/matrix-appservice-wechaty.ts --config config.yaml --file wechaty-registration.yaml",
     "dev:watch": "LOG_LEVEL=silly npx nodemon --watch '{bin,src,tests}/**/*.ts' --exec './node_modules/.bin/ts-node' bin/matrix-appservice-wechaty.ts",
     "pack": "npm pack",
     "sloc": "sloc bin scripts src tests --details --format cli-table --keys total,source,comment && sloc bin scripts src tests",
@@ -40,10 +42,11 @@
   "homepage": "https://github.com/huan/matrix-appservice-wechaty#readme",
   "dependencies": {
     "cuid": "^2.1.8",
+    "dotenv": "^10.0.0",
     "matrix-appservice-bridge": "^2.4.1",
     "read-pkg-up": "^7.0.1",
     "update-notifier": "^5.1.0",
-    "wechaty": "^0.62.2"
+    "wechaty": "^0.62.3"
   },
   "devDependencies": {
     "@chatie/eslint-config": "^0.12.3",

@@ -308,7 +308,7 @@ export class WechatyManager extends Manager {
       throw new Error('can not found from contact for wechat message')
     }
 
-    await this.middleManager.directMessageToMatrixConsumer(onWechatyMessage.text(), from)
+    await this.middleManager.directMessageToMatrixConsumer(onWechatyMessage, from)
   }
 
   async processRoomMessage (

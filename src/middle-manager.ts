@@ -2,6 +2,7 @@ import {
   Room as WechatyRoom,
   Contact as WechatyUser,
   Wechaty,
+  Message,
 }                             from 'wechaty'
 
 import {
@@ -461,16 +462,18 @@ export class MiddleManager extends Manager {
   /**
    * Send message from service bot to the bridge consumer
    */
-  public async directMessageToMatrixConsumer (text: string, from: Wechaty): Promise<void>
+  public async directMessageToMatrixConsumer (message: string, from: Wechaty): Promise<void>
   /**
    * Send message from user to the bridge consumer
    */
-  public async directMessageToMatrixConsumer (text: string, from: WechatyUser): Promise<void>
+  public async directMessageToMatrixConsumer (message: string, from: WechatyUser): Promise<void>
+  public async directMessageToMatrixConsumer (message: Message, from: WechatyUser): Promise<void>
 
   public async directMessageToMatrixConsumer (
-    text: string,
+    message: string | Message,
     from: WechatyUser | Wechaty,
   ): Promise<void> {
+    const text = typeof (message) === 'string' ? message : message.text()
     log.verbose('MiddleManager', 'directMessageToMatrixConsumer("%s", "%s")',
       text,
       from
@@ -494,7 +497,7 @@ export class MiddleManager extends Manager {
     }
 
     await this.appserviceManager.sendMessage(
-      text,
+      message,
       matrixRoom,
       matrixUser,
     )
