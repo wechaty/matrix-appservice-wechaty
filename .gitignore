@@ -66,3 +66,4 @@ t/
 
 .DS_Store
 .idea
+config.yaml

@@ -6,7 +6,9 @@ import {
   log,
   VERSION,
 }                     from '../src/'
+import dotenv         from 'dotenv'
 
+dotenv.config()
 async function main () {
   if (process.env.LOG_LEVEL) {
     log.level(process.env.LOG_LEVEL as any)

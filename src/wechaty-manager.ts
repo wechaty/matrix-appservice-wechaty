@@ -270,7 +270,7 @@ export class WechatyManager extends Manager {
     log.verbose('WechatyManager', 'onMessage("%s") from "%s" to "%s" with age "%s" (timestamp: "%s")',
       message,
       message.from()!.id,
-      message.to()!.id,
+      (message.to() || message.room())!.id,
       message.age(),
       (message as any).payload.timestamp,
     )
